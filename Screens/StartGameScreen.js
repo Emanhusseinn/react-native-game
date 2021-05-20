@@ -1,8 +1,9 @@
 import React, {useState} from 'react'
-import { Button, StyleSheet, Text,  TouchableWithoutFeedback,  View, Keyboard } from 'react-native';
+import { Button, StyleSheet, Text,  TouchableWithoutFeedback,  View, Keyboard, Alert } from 'react-native';
 import Card from '../Components/Cards'
 import Colors from '../constants/colors'
 import Input from '../Components/input'
+import NumberContainer from "../Components/NumberContainer"
 
 const StartGameScreen = props => {
 
@@ -29,24 +30,31 @@ const StartGameScreen = props => {
     }
     const confirmInputHandler =() =>{
         const chosenNumber = parseInt(enteredValue);
-        if (chosenNumber === NaN || chosenNumber<= 0|| chosenNumber> 99){
-            return;
+        if (isNaN(chosenNumber) || chosenNumber<= 0|| chosenNumber> 99){
+            Alert.alert('Invalid number!', 'Number has to be a number between 1 and 99.', 
+            [{text:'okay', style:'destructive',resetInputHandler}])
+            return;     
         }
         setConfirmed(true);
         setSelectedNumber(chosenNumber);
         setEnteredValue('');
+        Keyboard.dismiss();
     }
 
     let confirmedOutput;
 
     if (confirmed){
-        confirmedOutput = <Text>Chosen Number: {selectedNumber} </Text>
+        confirmedOutput = <Card  style={styles.summaryContainer}> 
+        <Text>You Selected</Text>
+        <NumberContainer> {selectedNumber}</NumberContainer>
+        <Button title='START GAME' onPress={()=> props.onStartGame(selectedNumber)}/>
+         </Card>
     }
 
     return (
         <TouchableWithoutFeedback onPress={()=>{ Keyboard.dismiss()}}>
         <View style={styles.container}>
-            <Text style={styles.title}>Start A New Game !!!</Text>
+            <Text style={styles.title}>Start A New Game 🎉!!!</Text>
             <Card style={styles.inputContainer}>
                 <Text> Select A Number !!! </Text>
                 <Input style={styles.input} 
@@ -100,6 +108,13 @@ const styles = StyleSheet.create({
     input: {
         width: 100,
         textAlign:'center'
+    },
+    title: {
+       margin:20
+    },
+    summaryContainer:{
+        marginTop:20,
+        alignItems:'center'
     }
 });
 export default StartGameScreen;
